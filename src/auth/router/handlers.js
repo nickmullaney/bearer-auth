@@ -24,7 +24,7 @@ async function handleSignin(req, res, next) {
     };
     res.status(200).json(user);
   } catch (e) {
-    console.error(e);
+    console.error('Signin Error', e);
     next(e);
   }
 }
@@ -41,7 +41,7 @@ async function handleGetUsers(req, res, next) {
 }
 
 function handleSecret(req, res, next) {
-  res.status(200).text('Welcome to the secret area!');
+  res.status(200).send('Welcome to the secret area!');
 }
 
 module.exports = {
