@@ -25,7 +25,7 @@ const userSchema = (sequelize, DataTypes) => {
   });
 
   model.beforeCreate(async (user) => {
-    let hashedPass = bcrypt.hash(user.password, 10);
+    let hashedPass = await bcrypt.hash(user.password, 10);
     user.password = hashedPass;
   });
 
@@ -42,7 +42,7 @@ const userSchema = (sequelize, DataTypes) => {
     try {
       const parsedToken = jwt.verify(token, SECRET);
       console.log(parsedToken);
-      const user = await this.findOne({where: { username: parsedToken.username }});
+      const user = await this.findOne({ where: { username: parsedToken.username } });
       if (user) { return user; }
       throw new Error('User Not Found');
     } catch (e) {
