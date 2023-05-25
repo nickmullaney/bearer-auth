@@ -2,24 +2,16 @@
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
 const SECRET = process.env.SECRET;
 
 const userSchema = (sequelize, DataTypes) => {
   const model = sequelize.define('User', {
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    username: { type: DataTypes.STRING, allowNull: false, unique: true },
+    password: { type: DataTypes.STRING, allowNull: false },
     token: {
       type: DataTypes.VIRTUAL,
       get() {
-        return jwt.sign({ username: this.username }, SECRET);
+        return jwt.sign({ username: this.username }, SECRET, { expiresIn: 1000 * 60 * 60 * 24 * 7 });
       },
     },
   });
@@ -41,8 +33,7 @@ const userSchema = (sequelize, DataTypes) => {
   model.authenticateToken = async function (token) {
     try {
       const parsedToken = jwt.verify(token, SECRET);
-      console.log(parsedToken);
-      const user = await this.findOne({ where: { username: parsedToken.username } });
+      const user = this.findOne({ where: { username: parsedToken.username } });
       if (user) { return user; }
       throw new Error('User Not Found');
     } catch (e) {
